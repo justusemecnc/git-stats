@@ -23,7 +23,7 @@ Uses vendored libgit2 via the `git2` crate.
 
 ```powershell
 cargo build --release
-./target/release/git-stats.exe summary --path D:/Portfolio
+./target/release/git-stats.exe summary --path ~/projects
 ```
 
 ```bash
@@ -42,9 +42,9 @@ cargo install --path .
 Scan a single repo or an entire projects folder:
 
 ```powershell
-cargo run -- summary --path D:/Portfolio/portfolio-website
-cargo run -- export --json --path D:/Portfolio > stats.json
-cargo run -- --path D:/Portfolio
+cargo run -- summary --path ./my-repo
+cargo run -- export --json --path ~/projects > stats.json
+cargo run -- --path ~/projects
 ```
 
 ```bash
@@ -84,7 +84,7 @@ cargo run -- --path ~/projects
 Config file: `~/.config/git-stats/config.toml` (Windows: `%APPDATA%\git-stats\config.toml`)
 
 ```toml
-scan_paths = ["D:/projects", "C:/dev"]
+scan_paths = ["~/projects", "~/dev"]
 exclude = ["node_modules", "target", ".cargo"]
 max_depth = 8
 parallel = true
