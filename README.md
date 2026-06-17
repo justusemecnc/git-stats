@@ -1,54 +1,91 @@
 # git-stats
 
-Terminal Git activity dashboard that scans, analyzes, and visualizes repository activity across a projects folder.
+Terminal Git activity dashboard. Scan a projects folder, analyze commit history, and explore stats in a TUI or export them from the shell.
 
-## Features
+## What it does
 
-- Recursive repository discovery with exclude patterns and parallel validation
-- Commit extraction via **git2** (no shelling out to `git`)
-- Author, temporal, velocity, and repository health metrics
-- Interactive TUI with dashboard, authors, repos, timeline, and achievements views
-- Output modes: TUI (default), summary, JSON, Markdown
+- Discovers Git repos recursively with exclude patterns and parallel validation
+- Extracts commit metadata via **git2** (no shelling out to `git`)
+- Author metrics, temporal patterns, velocity, and repository health
+- Interactive TUI — dashboard, authors, repos, timeline, and achievements
+- One-line summary, JSON export, or Markdown report from the CLI
 - Contribution heatmap, watch mode, and achievement system
 - Disk cache with HEAD OID fast path
 
-## Installation
+## Requirements
+
+- Rust 1.70+
+- Cargo
+
+Uses vendored libgit2 via the `git2` crate.
+
+## Build
+
+```powershell
+cargo build --release
+./target/release/git-stats.exe summary --path D:/Portfolio
+```
+
+```bash
+cargo build --release
+./target/release/git-stats summary --path ~/projects
+```
+
+Install globally:
 
 ```bash
 cargo install --path .
 ```
 
-Requires Rust 1.70+. Uses vendored libgit2 via the `git2` crate.
+## Try it
 
-## Usage
+Scan a single repo or an entire projects folder:
 
-```bash
-# Interactive dashboard (default)
-git-stats
-
-# One-line summary
-git-stats summary
-
-# JSON export
-git-stats export --json
-
-# Markdown report
-git-stats export --markdown -o report.md
-
-# Scan a specific directory
-git-stats --path ~/projects summary
-
-# Disable cache
-git-stats --no-cache summary
+```powershell
+cargo run -- summary --path D:/Portfolio/portfolio-website
+cargo run -- export --json --path D:/Portfolio > stats.json
+cargo run -- --path D:/Portfolio
 ```
 
-## Configuration
+```bash
+cargo run -- summary --path ~/projects
+cargo run -- export --markdown -o report.md --path ~/projects
+cargo run -- --path ~/projects
+```
+
+## Docs
+
+### CLI
+
+| Command | Description |
+|---------|-------------|
+| `git-stats` | Interactive TUI (default) |
+| `git-stats summary` | One-line overview |
+| `git-stats export --json` | JSON to stdout |
+| `git-stats export --markdown -o report.md` | Markdown report |
+| `git-stats --path DIR` | Override scan path |
+| `git-stats --no-cache` | Skip disk cache |
+
+### TUI keybindings
+
+| Key | Action |
+|-----|--------|
+| Tab / Shift+Tab | Switch views |
+| ↑ / ↓ | Navigate lists |
+| Enter | Author/repo detail |
+| Esc | Close detail panel |
+| r | Refresh scan |
+| w | Toggle watch mode |
+| s | Sort authors by name |
+| q | Quit |
+
+### Configuration
 
 Config file: `~/.config/git-stats/config.toml` (Windows: `%APPDATA%\git-stats\config.toml`)
 
 ```toml
 scan_paths = ["D:/projects", "C:/dev"]
-exclude = ["node_modules", "target", ".cargo", ".git"]
+exclude = ["node_modules", "target", ".cargo"]
 max_depth = 8
 parallel = true
 max_commits_per_repo = 5000
@@ -58,24 +95,11 @@ enabled = true
 ttl_hours = 24
 
 [display]
-theme = "dark"   # or "light"
+theme = "dark"
 refresh_secs = 30
 ```
 
-## TUI Keybindings
-
-| Key | Action |
-|-----|--------|
-| Tab / Shift+Tab | Switch views |
-| ↑ / ↓ | Navigate lists |
-| Enter | Drill into author/repo detail |
-| Esc | Close detail panel |
-| r | Refresh scan |
-| w | Toggle watch mode |
-| s | Sort authors by name (Authors view) |
-| q | Quit |
-
-## Achievements
+### Achievements
 
 | Badge | Criteria |
 |-------|----------|
@@ -85,24 +109,6 @@ refresh_secs = 30
 | Lone Wolf | Sole contributor in at least one repo |
 | Commitizen | Average commit message length > 50 chars |
 
-## Development
+## Source
 
-```bash
-cargo test
-cargo bench
-cargo run -- summary --path .
-```
-
-## Stretch goals
-
-- GitHub/GitLab remote comparison via API
-- WebAssembly dashboard
-- Slack weekly stats bot
-
-## Author
-
-justusemecnc
-
-## License
-
-MIT
+Modules in `src/` — `scanner`, `git/extract`, `stats`, `ui`, `output`, `achievements`. Tests in `tests/`, benchmarks in `benches/`.
